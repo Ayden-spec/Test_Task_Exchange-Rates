@@ -11,7 +11,7 @@ function HomePage() {
 
     const dispatch = useDispatch();
     const actual = useSelector(state => state.user.actual);
-    const not_actual = useSelector(state => state.user.previous);
+    const previous = useSelector(state => state.user.previous);
 
     useEffect(() => {
         dispatch(get_actual_rate(function (date_arr) {
@@ -27,8 +27,8 @@ function HomePage() {
     }, [])
 
     const find_obj = (element, name) => {
-        if (not_actual.find(obj => obj.date == element)) {
-            return not_actual.find(obj => obj.date == element).data.find(el=>el.CharCode === name)
+        if (previous.find(obj => obj.date === element)) {
+            return previous.find(obj => obj.date === element).data[name]
         }
     }
     return (
@@ -45,12 +45,12 @@ function HomePage() {
             {
                 actual.map((element, index) => (
                     <div key={index} onClick={() => SetList_Select_ID(index === List_Select_ID ? -1 : index)} className="terms_list_block">
-                        <span class="tooltiptext">{element.Name}</span>
+                        <span className="tooltiptext">{element[1].Name}</span>
                         <div className='terms_block_label_img'>
-                            <label className='terms_label'>{element.CharCode}</label>
-                            <label className='terms_label'>{element.Value}</label>
-                            <label className='terms_label'>{(((element.Value - element.Previous) / element.Previous) * 100).toFixed(5)}%</label>
-                            <label className='terms_label'>{element.Nominal}</label>
+                            <label className='terms_label'>{element[0]}</label>
+                            <label className='terms_label'>{element[1].Value}</label>
+                            <label className='terms_label'>{(((element[1].Value - element[1].Previous) / element[1].Previous) * 100).toFixed(5)}%</label>
+                            <label className='terms_label'>{element[1].Nominal}</label>
                             <img src={Arrow} className={List_Select_ID === index ? "terms_checkbox_img" : "terms_checkbox_img rotate"} />
                         </div>
                         <div className={List_Select_ID === index ? "info__body_true" : "info__body_false"}>
@@ -60,10 +60,10 @@ function HomePage() {
                         </div>
                         {
                             Days.map((el) => (
-                                <div className={List_Select_ID === index ? "info__body_true" : "info__body_false"}>
+                                <div key={`${el}_${index}`} className={List_Select_ID === index ? "info__body_true" : "info__body_false"}>
                                     <label className='terms_label'>{el}</label>
-                                    <label className='terms_label'>{find_obj(el, element.CharCode) ? find_obj(el, element.CharCode).Value : '-'}</label>
-                                    <label className='terms_label'>{find_obj(el, element.CharCode) ? find_obj(el, element.CharCode).Nominal : '-'}</label>
+                                    <label className='terms_label'>{find_obj(el, element[0]) ? find_obj(el, element[0]).Value : '-'}</label>
+                                    <label className='terms_label'>{find_obj(el, element[0]) ? find_obj(el, element[0]).Nominal : '-'}</label>
                                 </div>
                             ))
                         }
